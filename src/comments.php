@@ -44,7 +44,6 @@ class Comment {
     public function __construct()
     {
         //create empty construct() to be able to manipulate the object and keep DB up-to-date
-
         //set the ID to -1 to make sure you will not save to DB accidentally
         $this->id = -1;
         $this->setUserId(-1);
@@ -97,24 +96,27 @@ class Comment {
         return $this->createdTimeComment;
     }
 
-    public function saveToDB($conn) {
-        //checking if we create an object before saving details in DB
-        if($this->id === -1) {
-            //text max 60 chars
-            $insertComment = "INSERT INTO Comments(user_id, twit_id, comment_text, created_time)
-                              VALUES (
-                              '{$this->getUserId()}',
-                              '{$this->getTwitId()}',
-                              '{$this->getCommentText()}',
-                              '{$this->getCreatedTimeComment()}'
-                              )";
-            $result = $conn->query($insertComment);
-            if($result === TRUE) {
-                $this->id = $conn->insert_id;
-                return true;
+    public function saveToDB(mysqli $conn) {
+        if(strlen($this->getCommentText()) <= 60) {
+          //by checking if id = -1 we are checking if we are creating an object before saving details in DB
+            if($this->id === -1) {
+              //text max 60 chars
+              $insertComment = "INSERT INTO Comments(user_id, twit_id, comment_text, created_time)
+                                VALUES (
+                                '{$this->getUserId()}',
+                                '{$this->getTwitId()}',
+                                '{$this->getCommentText()}',
+                                '{$this->getCreatedTimeComment()}'
+                                )";
+              $result = $conn->query($insertComment);
+              if($result === TRUE) {
+                  $this->id = $conn->insert_id;
+                  return true;
+              }
             }
-        }
-        return false;
+            return false;
+          }
+          return false;
     }
 
     //load specific comment's details
@@ -123,7 +125,7 @@ class Comment {
         $loadFromDBQuery = "SELECT * FROM Comments WHERE twit_id={$idToFind}";
         $result = $conn->query($loadFromDBQuery);
         if($result != FALSE) {
-            if($result->num_rows === 0) {
+            if($result->num_rows === 1) {
                 $row = $result->fetch_assoc();
                 $this->id = $row['id'];
                 $this->setUserId($row['user_id']);

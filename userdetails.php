@@ -7,6 +7,7 @@ if (!isset($_SESSION['user'])) {
     header('Location:login.php');
 } else {
     $name = $_SESSION['user']['name'];
+    $myUserId = $_SESSION['user']['id'];
 }
 
 //Showing all twits of a user
@@ -22,7 +23,6 @@ if (isset($_GET['userId'])) {
 }
 
 if($_SERVER['REQUEST_METHOD'] == "POST"){
-    var_dump($_POST);
     $switchUserTo = $_POST['twituser'];
     if(isset($switchUserTo)) {
         header("Location:userdetails.php?userId={$switchUserTo}");
@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
             ?>
 
         <div class="btn-group" role="group">
-            <p><a class="btn btn-lg btn-success" href="createmessage.php" role="button">Send message to <?php echo $user->getName(); ?></a></p>
+            <?php echo "<p><a class=\"btn btn-lg btn-success\" href=\"createmassage.php?receiverId={$user->getId()}\" role=\"button\">Send message to {$user->getName()}</a></p>"; ?>
         </div>
 
         <h3>Choose other user</h3>
@@ -95,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
                 ?>
             </select>
-            <button type="submit" name="showuser" class="btn btn-default">Show user (TODO)</button>
+            <button type="submit" name="showuser" class="btn btn-default">Show user</button>
         </form>
 
         <h3>All twits of <?php echo $user->getName(); ?></h3>

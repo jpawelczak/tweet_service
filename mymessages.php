@@ -2,35 +2,21 @@
 session_start();
 include_once 'include.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userid = $_SESSION['user']['id'];
-    $newTextTwit = $_POST['texttwit'];
-
-    if (isset($_SESSION['user']) && isset($_POST['twit']) && strlen($_POST['texttwit']) <=140 && strlen($_POST['texttwit']) >=1 ) {
-        $twitObject = new Tweet();
-        $twitObject->setTwitText();
-        if ($twitObject->addTwit()) {
-            $message = "Your Twit successfully added!";
-        }
-    } else {
-        $message = "Check if you added text to the textarea below";
-    }
-}
-
 //set SESSION's value
 if (!isset($_SESSION['user'])) {
     header('Location:login.php');
 } else {
-    echo "SESSION 'user' has started";
     $name = $_SESSION['user']['name'];
+    $myUserId = $_SESSION['user']['id'];
+    $myAllMessages = Message::GetAllMessagesForUser($conn, $myUserId);
+    $myAllSentMessages = Message::GetAllSentMessagesForUser($conn, $myUserId);
 }
 
 ?>
 
-
 <html lang="en-EN">
 <head>
-    <title>Add twits</title>
+    <title>Reply to the message</title>
     <meta charset="utf-8">
     <!-- Latest compiled and minified CSS -->
     <!-- Bootstrap core CSS -->
@@ -50,35 +36,74 @@ if (!isset($_SESSION['user'])) {
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
-                <li role="presentation"><a href="index.php">Home</a></li>
-                <li role="presentation"><a href="profile.php">Profile</a></li>
-                <li role="presentation" class="active"><a href="alltwits.php">Tweets</a></li>
+                <li role="presentation"><a href="index.php">My Twits</a></li>
+                <li role="presentation"><a href="profile.php">My Profile</a></li>
+                <li role="presentation" class="active"><a href="mymessages.php">My Messages</a></li>
+                <li role="presentation"><a href="twits.php">All Twits</a></li>
                 <li role="presentation"><a href="logout.php">Log out</a></li>
             </ul>
         </nav>
-        <h3 class="text-muted">Twits of <?php echo $name ?></h3>
+        <h3 class="text-muted">Welcome <?php echo $name ?>!</h3>
     </div>
 
     <div id="content">
 
-        <h3>Add new twits</h3>
+        <h3>All received messages:</h3>
         <?php
-        //show message if error in $message above
-        if (isset($message)) {
+        if(count($myAllMessages) > 0) {
+            foreach ($myAllMessages as $key => $myMessage) {
+                echo "<div class='panel panel-default'>";
+                echo "<div class='panel-body'>";
+                if($myMessage->getOpenMessage() == 0 OR $myMessage->getOpenMessage() == null) {
+                    echo "<a href='createmassage.php?messageId={$myMessage->getId()}&receiverId={$myMessage->getSenderId()}'><span class=\"glyphicon glyphicon-envelope\" aria-hidden=\"true\"></span>  Message for $name</a>";
+                } else {
+                    echo "<a href='createmassage.php?messageId={$myMessage->getId()}&receiverId={$myMessage->getSenderId()}'><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span> Message for $name</a>";
+                }
+                echo "<br />";
+                $partMessage = substr($myMessage->getMessageText(), 0, 30);
+                echo "<strong>Message:</strong> {$partMessage}...";
+                echo "<br />";
+                echo "<br /><a href='createmassage.php?messageId={$myMessage->getId()}&receiverId={$myMessage->getSenderId()}'>Read it</a>";
+                echo "</div>";
+                echo "<div class='panel-footer'>Received on {$myMessage->getCreatedDate()}</div>";
+                $senderUserId = $myMessage->getSenderId();
+                $senderDetails = User::getUserProfile($senderUserId);
+                foreach($senderDetails as $key => $senderName) {
+                    echo "<div class='panel-footer'>"."Sent by: <a href='userdetails.php?userId={$senderName->getId()}'> {$senderName->getName()} </a></div>";
+                }
+                echo "</div>";
+            }
+        } else {
             echo "<div class=\"alert alert-warning\" role=\"alert\">";
-            echo $message;
+            echo "User hasn't received any messages yet";
             echo '</div>';
         }
         ?>
 
-        <form action="alltwits.php" method="POST" class="form-signin" id="twitform">
-            <div class="form-group">
-                <label for="twitform">Add text below (140 chars maximum)</label>
-                <textarea rows="4" cols="40" name="texttwit" id="twitform" form="twitform" maxlength="140">Enter your twit here...</textarea>
-                <button type="submit" name="twit" class="btn btn-default">Send twit</button>
-            </div>
-        </form>
-    </div>
+        <h3>All sent messages by <?php echo $name;?>:</h3>
+        <?php
+        if(count($myAllSentMessages) > 0) {
+            foreach ($myAllSentMessages as $key => $mySentMessage) {
+                echo "<div class='panel panel-default'>";
+                echo "<div class='panel-body'>";
+                $receiverId = $mySentMessage->getReceiverId();
+                $receiverDetails = User::getUserProfile($receiverId);
+                echo "<a href='createmassage.php?messageId={$mySentMessage->getId()}'><span class=\"glyphicon glyphicon-share-alt\" aria-hidden=\"true\"></span>  Message sent to {$receiverDetails[0]->getName()}</a>";
+                echo "<br />";
+                $partMessage = substr($mySentMessage->getMessageText(), 0, 30);
+                echo "<strong>Message:</strong> {$partMessage}...";
+                echo "<br />";
+                echo "<br /><a href='createmassage.php?messageId={$mySentMessage->getId()}'>Read it</a>";
+                echo "</div>";
+                echo "<div class='panel-footer'>Sent on {$mySentMessage->getCreatedDate()}, by <a href='userdetails.php?userId={$mySentMessage->getId()}'> $name </a></div>";
+                echo "</div>";
+            }
+        } else {
+            echo "<div class=\"alert alert-warning\" role=\"alert\">";
+            echo "User hasn't received any messages yet";
+            echo '</div>';
+        }
+        ?>
     <nav>
         <ul class="nav nav-pills pull-right">
             <li role="presentation"><a href="login.php">Login</a></li>

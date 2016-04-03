@@ -1,4 +1,6 @@
 # Twitter-like project
+I added source files so that you could look at the code I wrote.
+Note: some part of the project is built without proper OOP approach to present how more difficult is to manage a project in non-structured way.
 
 ## How did I do it as high-level step by step process?
 
@@ -24,26 +26,20 @@ I will add here parts that went smooth and easy.
 * create single include.php file - add all classes and connection to the file. This way, you will manage only one file if you create additional class to the project.
 * use static methods to load data from databases, e.g. all twits or all comments. It is easier to manage once you have all building blocks.
 
-
 ### Databases
 I created following databases:
 * users of the service,
-* users' twits,
-* users' comments,
+* users' twits with appropriate associations,
+* users' comments with appropriate associations,
 * messages with association to Users table (sender_id and receiver_id).
 
 ### Tools
-* Bootstrap
-* php
-* MySQL
-* PHP Storm
-* Atom
-* github
-
-<!-- Links -->
-[forking]: https://guides.github.com/activities/forking/
-[ref-clone]: http://gitref.org/creating/#clone
-[ref-commit]: http://gitref.org/basic/#commit
-[ref-push]: http://gitref.org/remotes/#push
-[ref-rand]: http://php.net/manual/pl/function.rand.php
-[pull-request]: https://help.github.com/articles/creating-a-pull-request
+I used following tools:
+* php http://php.net/downloads.php
+* MySQL https://www.mysql.com/downloads/
+* VirtualBox https://www.virtualbox.org/
+* Bootstrap http://getbootstrap.com/
+* PHP Storm https://www.jetbrains.com/phpstorm/
+* Atom https://atom.io/
+* Git Bash https://git-for-windows.github.io/
+* github https://github.com/

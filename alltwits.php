@@ -6,7 +6,7 @@ include_once 'include.php';
 if (!isset($_SESSION['user'])) {
     header('Location:login.php');
 } else {
-    $name = $_SESSION['user']['name'];
+    header('Location:index.php');
 }
 
 //adding twits
@@ -60,7 +60,7 @@ if (isset($_SESSION['user']['id'])) {
             <ul class="nav nav-pills pull-right">
                 <li role="presentation" class="active"><a href="index.php">My Twits</a></li>
                 <li role="presentation"><a href="profile.php">My Profile</a></li>
-                <li role="presentation"><a href="mymessages.php">My Messages</a></li>
+                <li role="presentation"><a href="messages.php">My Messages</a></li>
                 <li role="presentation"><a href="twits.php">All Twits</a></li>
                 <li role="presentation"><a href="logout.php">Log out</a></li>
             </ul>

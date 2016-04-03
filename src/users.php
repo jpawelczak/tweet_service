@@ -3,12 +3,76 @@ include_once 'db_connection.php';
 
 class User
 {
+    //static methods always at the beginning and stating with cap letter
+    static public function GetAllUsers(){
+        $conn = DbConnection::getConnection();
+
+        $getAllUsersQuery = 'SELECT id, name FROM Users';
+        $usersTable = array();
+
+        $result = $conn->query($getAllUsersQuery);
+
+        if ($result->num_rows > 0) {
+
+            //we take all elements from query and change to a table
+            //to echo it on profile.php page
+            while ($row = $result->fetch_assoc()) {
+                $profile = new User();
+                $profile->id = $row['id'];
+                $profile->setName($row['name']);
+
+                //adding the object to the table
+                $usersTable[] = $profile;
+            }
+
+        }
+        $conn->close();
+        $conn = null;
+
+        return $usersTable;
+    }
+
+    static public function getUserProfile($userid)
+    {
+        $conn = DbConnection::getConnection();
+
+        $getUserQuery = 'SELECT id, name, email, description FROM Users
+                        WHERE id="' . $userid . '";';
+        $userProfile = array();
+
+        $result = $conn->query($getUserQuery);
+
+        if ($result->num_rows === 1) {
+
+            //we take all elements from query and change to a table
+            //to echo it on profile.php page
+            while ($row = $result->fetch_assoc()) {
+                $profile = new User();
+                $profile->id = $row['id'];
+                $profile->setName($row['name']);
+                $profile->setEmail($row['email']);
+                $profile->setDescription($row['description']);
+
+                //adding the object to the table
+                $userProfile[] = $profile;
+            }
+
+        }
+        $conn->close();
+        $conn = null;
+
+        return $userProfile;
+    }
+
+
+
     //order like in database
     private $id;
-    public $username;
-    public $email;
+    private $name;
+    private $email;
     private $password;
     private $salt;
+    private $description;
 
     public function __construct()
     {
@@ -17,10 +81,42 @@ class User
         if (!empty($_SESSION['user'])) {
             $user = $_SESSION['user'];
             $this->id = $user['id'];
-            $this->username = $user['username'];
-            $this->email = $user['email'];
-            $this->salt = $user['salt'];
         }
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     //we accept users without username - we define null in the method
@@ -107,37 +203,6 @@ class User
         unset($_SESSION['user']);
         //session_destroy();
         //header("Location: login.php");
-    }
-
-    public function getUserProfile($userid)
-    {
-        $this->id = $userid;
-
-        $conn = DbConnection::getConnection();
-
-        $getUserQuery = 'SELECT * FROM Users
-                        WHERE id="' . $this->id . '";';
-
-        $result = $conn->query($getUserQuery);
-
-        //$rowProfile = $result->fetch_assoc();
-
-        if ($result->num_rows > 0) {
-
-            //we take all elements from query and change to a table
-            //to echo it on profile.php page
-            while ($rowProfile = $result->fetch_assoc()) {
-                $userProfile = "User name: " . $rowProfile['name'] . "<br />" . "User's email: " . $rowProfile['email'] . "<br />";
-                return $userProfile;
-            }
-        }
-
-
-        $conn->close();
-        $conn = null;
-
-        //return $rowProfile;
-
     }
 
     public function updateUserEmail($id, $newEmail)
@@ -260,7 +325,7 @@ class User
         return $deletedUser;
     }
 
-    public function getAllPosts()
+    public function getAllMyTwits()
     {
 
     }

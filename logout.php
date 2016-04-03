@@ -1,23 +1,20 @@
 <?php
 session_start ();
-
-include_once 'users.php';
+include_once 'include.php';
 
 //set SESSION's value
 if(!isset($_SESSION['user'])) {
     echo "No 'user' SESSION";
-    var_dump($_SESSION);
 } else {
     $userObject = new User;
     $userObject->logout();
-    var_dump($_SESSION);
 }
 
 ?>
 
 <html lang="en-EN">
 <head>
-    <title>Login to Twit service</title>
+    <title>Logout from Twit service</title>
     <meta charset="utf-8">
     <!-- Latest compiled and minified CSS -->
     <!-- Bootstrap core CSS -->
@@ -34,8 +31,8 @@ if(!isset($_SESSION['user'])) {
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="login.php">Login</a></li>
-                <li role="presentation"><a href="registration.php">Register</a></li>
+                <li role="presentation"><a href="login.php">Login</a></li>
+                <li role="presentation"><a href="registration.php">Registration</a></li>
             </ul>
         </nav>
     </div>
@@ -43,7 +40,7 @@ if(!isset($_SESSION['user'])) {
     <div class="jumbotron">
         <h1>Thank you for using the Twit-like service</h1>
         <p class="lead">Add messages and share them with your friends. It is super easy!</p>
-        <p><a class="btn btn-lg btn-success" href="addtweet.php" role="button">Add new twit</a></p>
+        <p><a class="btn btn-lg btn-success" href="login.php" role="button">Add new twit</a></p>
     </div>
 
     <nav>

@@ -1,6 +1,6 @@
 <?php
 
-include_once 'users.php';
+include_once 'include.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -15,9 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = "Please add missing details in the form below";
         } elseif ($password != $confirmPassword) {
             $message = "Passwords do not match";
+        } elseif ($conn->errno === 1062) {
+            $message = "Sorry, the email already exists in our database. Please use other email to register";
         } else {
             $userObject = new User;
-            if ($userObject->addUser($email, $password, $username)) {
+            if ($userObject->login($email, $password)) {
                 $message = "User successfully added. Now you can <a href='login.php'>login</a>";
             }
         }

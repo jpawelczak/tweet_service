@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'users.php';
+include_once 'include.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userid = $_SESSION['user']['id'];
@@ -56,18 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 //set SESSION's value
 if (!isset($_SESSION['user'])) {
-    $message = "error - no 'user' SESSION";
-    var_dump($_SESSION);
+    header('Location:login.php');
 } else {
-    echo "SESSION 'user' has started";
     $name = $_SESSION['user']['name'];
 }
 
-
 if (isset($_SESSION['user']['name'])) {
     $useridSession = $_SESSION['user']['id'];
-    $userProfileDetails = new User;
-    $resultProfileQuery = $userProfileDetails->getUserProfile($useridSession);
+    $userDetails = User::getUserProfile($useridSession);
 }
 
 ?>
@@ -95,23 +91,29 @@ if (isset($_SESSION['user']['name'])) {
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
-                <li role="presentation"><a href="index.php">Home</a></li>
-                <li role="presentation" class="active"><a href="profile.php">Profile</a></li>
-                <li role="presentation"><a href="alltweets.php">Tweets</a></li>
+                <li role="presentation"><a href="index.php">My Twits</a></li>
+                <li role="presentation" class="active"><a href="profile.php">My Profile</a></li>
+                <li role="presentation"><a href="mymessages.php">My Messages</a></li>
+                <li role="presentation"><a href="twits.php">All Twits</a></li>
                 <li role="presentation"><a href="logout.php">Log out</a></li>
             </ul>
         </nav>
-        <h3 class="text-muted">Twits of <?php echo $name ?></h3>
+        <h3 class="text-muted">Welcome <?php echo $name ?>!</h3>
     </div>
 
     <div id="content">
         <h3>Your current details</h3>
-        <div class="form-group">
             <?php
-            echo $resultProfileQuery;
+
+            foreach($userDetails as $key => $user){
+                echo "<div class='panel panel-default'>";
+                echo "<div class='panel-body'>Full name: {$user->getName()}</div>";
+                echo "<div class='panel-footer'>Email: {$user->getEmail()}</div>";
+                echo "<div class='panel-footer'>Description: {$user->getDescription()}</div>";
+                echo "</div>";
+            }
 
             ?>
-        </div>
 
         <h3>Update your details</h3>
         <?php

@@ -7,30 +7,9 @@ if (!isset($_SESSION['user'])) {
     header('Location:login.php');
 } else {
     $name = $_SESSION['user']['name'];
-}
-
-//adding twits
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userid = $_SESSION['user']['id'];
-    $newTextTwit = $_POST['texttwit'];
-
-    if (isset($_SESSION['user']) && isset($_POST['twit']) && strlen($_POST['texttwit']) <=140 && strlen($_POST['texttwit']) >=1 ) {
-        $twitObject = new Tweet();
-        $twitObject->setTwitText($newTextTwit);
-        $twitObject->setUserId($userid);
-        if ($twitObject->addTwit()) {
-            $message = "Your Twit successfully added!";
-        }
-    } else {
-        $message = "Check if you added text to the textarea below";
-    }
-}
-
-//Showing all twits of a user
-if (isset($_SESSION['user']['id'])) {
-    $useridSession = $_SESSION['user']['id'];
     $userAllTwits = new Tweet();
-    $resultAllTwitsQuery = $userAllTwits->getAllMyTwits($useridSession);
+    $resultAllTwitsQuery = Tweet::getAllTwits();
+
 }
 
 ?>
@@ -38,7 +17,7 @@ if (isset($_SESSION['user']['id'])) {
 
 <html lang="en-EN">
 <head>
-    <title>All my twits</title>
+    <title>User's details</title>
     <meta charset="utf-8">
     <!-- Latest compiled and minified CSS -->
     <!-- Bootstrap core CSS -->
@@ -58,53 +37,44 @@ if (isset($_SESSION['user']['id'])) {
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="index.php">My Twits</a></li>
+                <li role="presentation"><a href="index.php">My Twits</a></li>
                 <li role="presentation"><a href="profile.php">My Profile</a></li>
                 <li role="presentation"><a href="mymessages.php">My Messages</a></li>
-                <li role="presentation"><a href="twits.php">All Twits</a></li>
+                <li role="presentation" class="active"><a href="twits.php">All Twits</a></li>
                 <li role="presentation"><a href="logout.php">Log out</a></li>
             </ul>
         </nav>
         <h3 class="text-muted">Welcome <?php echo $name ?>!</h3>
     </div>
 
-    <?php
-    //show message if error in $message above
-    if (isset($message)) {
-        echo "<div class=\"alert alert-warning\" role=\"alert\">";
-        echo $message;
-        echo '</div>';
-    }
-    ?>
-
-    <div class="jumbotron">
-        <h1>Twit-like service</h1>
-        <p class="lead">Add messages and share them with your friends. It is super easy!</p>
-        <form action="#" method="POST" class="form-signin" id="twitform">
-            <div class="form-group">
-                <textarea rows="4" cols="40" name="texttwit" id="twitform" form="twitform" maxlength="140" placeholder="Add text below (140 chars maximum)"></textarea><br/>
-            </div>
-            <button type="submit" name="twit" class="btn btn-primary btn-lg">Send twit</button>
-
-        </form>
-    </div>
 
     <div id="content">
-        <h3>All your twits</h3>
 
-            <?php
+        <h3>All twits</h3>
 
-            foreach($resultAllTwitsQuery as $key => $twit){
+        <?php
+
+        if(count($resultAllTwitsQuery) > 0) {
+            foreach ($resultAllTwitsQuery as $key => $twit) {
                 echo "<div class='panel panel-default'>";
                 echo "<div class='panel-body'>{$twit->getTwitText()}</div>";
                 echo "<div class='panel-footer'>Created time: {$twit->getCreatedTime()}</div>";
+                $twitUserDetails = User::getUserProfile($twit->getUserId());
+                foreach($twitUserDetails as $key => $user) {
+                    echo "<div class='panel-footer'>"."Created by: {$user->getName()}, "."<a href='userdetails.php?userId={$user->getId()}'>Check user's profile</a></div>";
+                }
                 $showComments = Comment::GetAllCommentsForTwit($conn, $twit->getTwitId());
                 $numberOfComments = count($showComments);
                 echo "<div class='panel-footer'>Nr of comments: {$numberOfComments}, <a href='twitdetails.php?twitId={$twit->getTwitId()}'>Read comments</a></div>";
                 echo "</div>";
             }
+        } else {
+            echo "<div class=\"alert alert-warning\" role=\"alert\">";
+            echo "Error - No twits to show!";
+            echo '</div>';
+        }
 
-            ?>
+        ?>
 
     </div>
     <nav>

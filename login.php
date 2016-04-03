@@ -1,15 +1,26 @@
 <?php
 session_start ();
-
-include_once 'users.php';
+include_once 'include.php';
 
 //set SESSION's value
-if(!isset($_SESSION['user'])) {
-    echo "error - no 'user' SESSION";
-    var_dump($_SESSION);
-} else {
-    echo "SESSION user has started";
-    var_dump($_SESSION);
+if(isset($_SESSION['user'])) {
+    header('Location:index.php');
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    //verify if provided details are correct (e.g. not empty)
+    //username doesn't have to be provided - we do not check that
+    if (empty($email) || empty($password)) {
+        $message = "Please add missing details in the form below";
+    } else {
+        $userObject = new User;
+        if($userObject->login($email, $password, $username)) {
+            $message = "You logged in. Go to <a href='index.php'>My Twits page</a>";
+        }
+    }
 }
 
 ?>
@@ -51,7 +62,7 @@ if(!isset($_SESSION['user'])) {
         }
         ?>
 
-        <form action="index.php" method="POST" class="form-signin">
+        <form action="#" method="POST" class="form-signin">
             <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
                 <input type="text" name="email" class="form-control" id="exampleInputEmail1" placeholder="Email">

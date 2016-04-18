@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = "Please add missing details in the form below";
     } else {
         $userObject = new User;
-        if($userObject->login($email, $password, $username)) {
+        if($userObject->login($email, $password)) {
             $message = "You logged in. Go to <a href='index.php'>My Twits page</a>";
         }
     }

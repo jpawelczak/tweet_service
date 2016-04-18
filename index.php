@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $twitObject->setTwitText($newTextTwit);
         $twitObject->setUserId($userid);
         if ($twitObject->addTwit()) {
-            $message = "Your Twit successfully added!";
+            $message = "Your Tweet successfully added!";
         }
     } else {
         $message = "Check if you added text to the textarea below";
@@ -58,10 +58,10 @@ if (isset($_SESSION['user']['id'])) {
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="index.php">My Twits</a></li>
+                <li role="presentation" class="active"><a href="index.php">My Tweets</a></li>
                 <li role="presentation"><a href="profile.php">My Profile</a></li>
                 <li role="presentation"><a href="mymessages.php">My Messages</a></li>
-                <li role="presentation"><a href="twits.php">All Twits</a></li>
+                <li role="presentation"><a href="twits.php">All Tweets</a></li>
                 <li role="presentation"><a href="logout.php">Log out</a></li>
             </ul>
         </nav>
@@ -78,7 +78,7 @@ if (isset($_SESSION['user']['id'])) {
     ?>
 
     <div class="jumbotron">
-        <h1>Twit-like service</h1>
+        <h1>Tweet-like service</h1>
         <p class="lead">Add messages and share them with your friends. It is super easy!</p>
         <form action="#" method="POST" class="form-signin" id="twitform">
             <div class="form-group">
@@ -90,7 +90,7 @@ if (isset($_SESSION['user']['id'])) {
     </div>
 
     <div id="content">
-        <h3>All your twits</h3>
+        <h3>All your tweets</h3>
 
             <?php
 

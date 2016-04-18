@@ -30,6 +30,9 @@ class Comment {
                 }
             }
         }
+        $conn->close();
+        $conn = null;
+
         return $allComments;
     }
 
@@ -111,11 +114,16 @@ class Comment {
               $result = $conn->query($insertComment);
               if($result === TRUE) {
                   $this->id = $conn->insert_id;
+
+                  $conn->close();
+                  $conn = null;
+
                   return true;
               }
             }
             return false;
           }
+
           return false;
     }
 
@@ -134,5 +142,8 @@ class Comment {
                 $this->setCreatedTimeComment($row['created_time']);
             }
         }
+
+        $conn->close();
+        $conn = null;
     }
 }
